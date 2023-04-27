@@ -11,7 +11,6 @@ const range = (x, y) => {
   return res
 }
 
-var bpe_merges;
 fetch(url)
     .then((response) => response.text()) //assuming file contains json
     .then((json) => setBPEStuff(json));
@@ -56,6 +55,8 @@ function bytes_to_unicode() {
 
 const textEncoder = new TextEncoder("utf-8")
 const byte_encoder = bytes_to_unicode()
+var bpe_merges;
+var bpe_ranks;
 
 function get_pairs(word) {
   const pairs = new Set()
@@ -68,10 +69,8 @@ function get_pairs(word) {
   return pairs
 }
 
-var bpe_ranks;
 
 function setBPEStuff(bpe_file){
-  console.log(bpe_file)
   const lines = bpe_file.split('\n')
   // bpe_merges = [tuple(merge_str.split()) for merge_str in bpe_data.split("\n")[1:-1]]
   bpe_merges = lines.slice(1, lines.length - 1).map(x => {
@@ -81,7 +80,6 @@ function setBPEStuff(bpe_file){
 }
 
 function setEncoderStuff(json){
-  console.log(json)
   encoderParse = JSON.parse(json)
 }
 
@@ -195,7 +193,7 @@ function injectStyles() {
     }
     .token-counter {
       position: absolute;
-      bottom: 8px;
+      top: 8px;
       right: 50px; // Increase this value if needed to position the token count further to the left
       font-size: 14px;
       font-weight: bold;
@@ -217,7 +215,7 @@ function updateTokenCount(wrapper) {
 }
 
 function initTokenCounter() {
-  const textarea = document.querySelector('textarea[data-id="root"]');
+  const textarea = document.querySelector('main');
 
   if (!textarea) {
     setTimeout(initTokenCounter, 500);
@@ -250,10 +248,12 @@ function initTokenCounter() {
 function observeAppChanges() {
   const appRoot = document.querySelector('#__next');
 
+  console.log("changed?")
   if (!appRoot) {
     setTimeout(observeAppChanges, 500);
     return;
   }
+  console.log("changed")
 
   const observer = new MutationObserver((mutations) => {
     for (const mutation of mutations) {
