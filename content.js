@@ -1,27 +1,174 @@
+const bpe_file = "";
+const url = chrome.runtime.getURL('vocab.bpe');
+
+const encoder = chrome.runtime.getURL('vocab.bpe');
+
+
+fetch(url)
+    .then((response) => response.json()) //assuming file contains json
+    .then((json) => setBPEStuff(json));
+
+const dictZip = (x, y) => {
+  const result = {}
+  x.map((_, i) => { result[x[i]] = y[i] })
+  return result
+}
+
+const lines = bpe_file.split('\n')
+
+// bpe_merges = [tuple(merge_str.split()) for merge_str in bpe_data.split("\n")[1:-1]]
+const bpe_merges = lines.slice(1, lines.length - 1).map(x => {
+  return x.split(/(\s+)/).filter(function(e) { return e.trim().length > 0 })
+})
+
+function bytes_to_unicode() {
+  const bs = range(ord('!'), ord('~') + 1).concat(range(ord('¡'), ord('¬') + 1), range(ord('®'), ord('ÿ') + 1))
+
+  let cs = bs.slice()
+  let n = 0
+  for (let b = 0; b < 2 ** 8; b++) {
+    if (!bs.includes(b)) {
+      bs.push(b)
+      cs.push(2 ** 8 + n)
+      n = n + 1
+    }
+  }
+
+  cs = cs.map(x => chr(x))
+
+  const result = {}
+  bs.map((_, i) => { result[bs[i]] = cs[i] })
+  return result
+}
+
+const byte_encoder = bytes_to_unicode()
+
+function get_pairs(word) {
+  const pairs = new Set()
+  let prev_char = word[0]
+  for (let i = 1; i < word.length; i++) {
+    const char = word[i]
+    pairs.add([prev_char, char])
+    prev_char = char
+  }
+  return pairs
+}
+
+//const byte_encoder = bytes_to_unicode()
+//const byte_decoder = {}
+//Object.keys  (byte_encoder).map(x => { byte_decoder[byte_encoder[x]] = x })
+
+const range = (x, y) => {
+  const res = Array.from(Array(y).keys()).slice(x)
+  return res
+}
+
+const bpe_ranks = dictZip(bpe_merges, range(0, bpe_merges.length))
+
+function setBPEStuff(json){
+  console.log(json)
+}
+
+const encodeStr = str => {
+  return Array.from(textEncoder.encode(str)).map(x => x.toString())
+}
+
 function countTokens(text) {
   text = text.trim();
   if (!text) {
     return 0;
   }
+  total_count = 0
+  const sentences = Array.from(text.matchAll(/s|'t|'re|'ve|'m|'ll|'d| ?\p{L}+| ?\p{N}+| ?[^\s\p{L}\p{N}]+|\s+(?!\S)|\s+/g)).map(x => x[0])
 
-  const sentences = text.split(/[.!?]+/);
-  const words = text.split(/\s+/);
+  // const words = text.split(/\s+/);
 
-  let tokenCount = 0;
+  // let tokenCount = 0;
 
-  const avgTokensPerSentence = 30;
-  const avgTokensPerWord = 1; // Since 1 token ~= ¾ words, we can approximate 1 token ~= 1 word
-  const avgTokensPerParagraph = 100;
+  // const avgTokensPerSentence = 30;
+  // const avgTokensPerWord = 1; // Since 1 token ~= ¾ words, we can approximate 1 token ~= 1 word
+  // const avgTokensPerParagraph = 100;
 
   // Estimating tokens based on sentences, words, and paragraphs
-  tokenCount += sentences.length * avgTokensPerSentence;
-  tokenCount += words.length * avgTokensPerWord;
-  tokenCount += text.split(/\n{2,}/).length * avgTokensPerParagraph;
+  //tokenCount += sentences.length * avgTokensPerSentence;
+  // tokenCount += words.length * avgTokensPerWord;
+  // tokenCount += text.split(/\n{2,}/).length * avgTokensPerParagraph;
 
   // Subtracting overestimations
-  tokenCount -= sentences.length * (avgTokensPerSentence - avgTokensPerWord);
+  //tokenCount -= sentences.length * (avgTokensPerSentence - avgTokensPerWord);
+  for (var i = 0; i < sentences.length; i++) {
+    sentences[i] = encodeStr(sentences[i]).map(x => {
+      return byte_encoder[x]
+    }).join('')
 
-  return tokenCount;
+    total_count += bpe(sentences[i]).split(" ").length
+  }
+  return total_count;
+}
+
+
+function bpe(token) {
+
+  let word = token.split('')
+
+  let pairs = get_pairs(word)
+
+  if (!pairs) {
+    return token
+  }
+
+  while (true) {
+    const minPairs = {}
+    Array.from(pairs).map(pair => {
+      const rank = bpe_ranks[pair]
+      minPairs[(isNaN(rank) ? 10e10 : rank)] = pair
+    })
+
+
+
+    const bigram = minPairs[Math.min(...Object.keys(minPairs).map(x => {
+      return parseInt(x)
+    }
+    ))]
+
+    if (!(bigram in bpe_ranks)) {
+      break
+    }
+
+    const first = bigram[0]
+    const second = bigram[1]
+    let new_word = []
+    let i = 0
+
+    while (i < word.length) {
+      const j = word.indexOf(first, i)
+      if (j === -1) {
+        new_word = new_word.concat(word.slice(i))
+        break
+      }
+      new_word = new_word.concat(word.slice(i, j))
+      i = j
+
+      if (word[i] === first && i < word.length - 1 && word[i + 1] === second) {
+        new_word.push(first + second)
+        i = i + 2
+      } else {
+        new_word.push(word[i])
+        i = i + 1
+      }
+    }
+
+    word = new_word
+    if (word.length === 1) {
+      break
+    } else {
+      pairs = get_pairs(word)
+    }
+  }
+
+  word = word.join(' ')
+
+  return word
 }
 
 function injectStyles() {

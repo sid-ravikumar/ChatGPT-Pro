@@ -18,5 +18,9 @@
       "matches": ["https://chat.openai.com/*"],
       "js": ["content.js"]
     }
-  ]
+  ],
+  "web_accessible_resources": [{
+    "resources": ["vocab.bpe"],
+    "matches": ["<all_urls>"]
+  }]
 }
