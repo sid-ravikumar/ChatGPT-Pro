@@ -1,12 +1,24 @@
-const bpe_file = "";
+//const bpe_file = "";
 const url = chrome.runtime.getURL('vocab.bpe');
 
-const encoder = chrome.runtime.getURL('vocab.bpe');
+const encoder = chrome.runtime.getURL('encoder.json');
 
+//const byte_encoder = bytes_to_unicode()
+//const byte_decoder = {}
+//Object.keys  (byte_encoder).map(x => { byte_decoder[byte_encoder[x]] = x })
+const range = (x, y) => {
+  const res = Array.from(Array(y).keys()).slice(x)
+  return res
+}
 
+var bpe_merges;
 fetch(url)
-    .then((response) => response.json()) //assuming file contains json
+    .then((response) => response.text()) //assuming file contains json
     .then((json) => setBPEStuff(json));
+
+fetch(encoder)
+    .then((response) => response.json()) //assuming file contains json
+    .then((json) => setEncoderStuff(json));
 
 const dictZip = (x, y) => {
   const result = {}
@@ -14,12 +26,13 @@ const dictZip = (x, y) => {
   return result
 }
 
-const lines = bpe_file.split('\n')
+const chr = x => {
+  return String.fromCharCode(x)
+}
 
-// bpe_merges = [tuple(merge_str.split()) for merge_str in bpe_data.split("\n")[1:-1]]
-const bpe_merges = lines.slice(1, lines.length - 1).map(x => {
-  return x.split(/(\s+)/).filter(function(e) { return e.trim().length > 0 })
-})
+const ord = x => {
+  return x.charCodeAt(0)
+}
 
 function bytes_to_unicode() {
   const bs = range(ord('!'), ord('~') + 1).concat(range(ord('¡'), ord('¬') + 1), range(ord('®'), ord('ÿ') + 1))
@@ -41,6 +54,7 @@ function bytes_to_unicode() {
   return result
 }
 
+const textEncoder = new TextEncoder("utf-8")
 const byte_encoder = bytes_to_unicode()
 
 function get_pairs(word) {
@@ -54,19 +68,21 @@ function get_pairs(word) {
   return pairs
 }
 
-//const byte_encoder = bytes_to_unicode()
-//const byte_decoder = {}
-//Object.keys  (byte_encoder).map(x => { byte_decoder[byte_encoder[x]] = x })
+var bpe_ranks;
 
-const range = (x, y) => {
-  const res = Array.from(Array(y).keys()).slice(x)
-  return res
+function setBPEStuff(bpe_file){
+  console.log(bpe_file)
+  const lines = bpe_file.split('\n')
+  // bpe_merges = [tuple(merge_str.split()) for merge_str in bpe_data.split("\n")[1:-1]]
+  bpe_merges = lines.slice(1, lines.length - 1).map(x => {
+    return x.split(/(\s+)/).filter(function(e) { return e.trim().length > 0 })
+  })
+  bpe_ranks = dictZip(bpe_merges, range(0, bpe_merges.length))
 }
 
-const bpe_ranks = dictZip(bpe_merges, range(0, bpe_merges.length))
-
-function setBPEStuff(json){
+function setEncoderStuff(json){
   console.log(json)
+  encoderParse = JSON.parse(json)
 }
 
 const encodeStr = str => {

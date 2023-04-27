@@ -22,5 +22,8 @@
   "web_accessible_resources": [{
     "resources": ["vocab.bpe"],
     "matches": ["<all_urls>"]
+  },{
+    "resources": ["encoder.json"],
+    "matches": ["<all_urls>"]
   }]
 }
