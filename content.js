@@ -150,10 +150,9 @@ function bpe(token) {
 }
 
 // Inject CSS for token counter
-
 function injectStyles() {
     const style = document.createElement('style');
-    style.textContent = `.token-counter-wrapper { position: relative; } .token-counter { position: absolute; top: 8px; right: 50px; font-size: 14px; font-weight: bold; color: #333; background-color: #f8f9fa; padding: 2px 6px; border-radius: 3px; }`;
+    style.textContent = `.token-counter-wrapper { position: relative; } .token-counter { position: absolute; top: 8px; right: 50px; font-size: 14px; font-weight: bold; color: #333a; background-color: #f8595aaa; padding: 2px 6px; border-radius: 3px; }`;
     document.head.appendChild(style);
 }
 
