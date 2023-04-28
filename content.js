@@ -158,9 +158,9 @@ function injectStyles() {
 
 // Update token count
 function updateTokenCount(wrapper) {
-    const textarea = wrapper.querySelector('textarea');
+    const textarea = document.querySelector('textarea');
     const tokenCount = countTokens(textarea.value);
-    const tokenCounter = wrapper.querySelector('.token-counter');
+    const tokenCounter = document.querySelector('.token-counter');
     tokenCounter.textContent = `${tokenCount} tokens`;
 
     if(tokenCount > 4096) {
@@ -200,7 +200,6 @@ function initTokenCounter() {
     wrapper.appendChild(tokenCounter);
 
     updateTokenCount(wrapper);
-    textarea.addEventListener('input', () => updateTokenCount(wrapper));
 }
 
 // Observe changes in the application
@@ -214,7 +213,12 @@ function observeAppChanges() {
 
     const observer = new MutationObserver(mutations => {
         for (const mutation of mutations) {
+
+            console.log()
             if (mutation.type === 'childList' || mutation.type === 'subtree') {
+                if(mutation.target.type == "textarea"){
+                  updateTokenCount([])
+                }
                 initTokenCounter();
                 break;
             }
