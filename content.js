@@ -163,7 +163,7 @@ function updateTokenCount(wrapper) {
     const tokenCounter = wrapper.querySelector('.token-counter');
     tokenCounter.textContent = `${tokenCount} tokens`;
 
-    if(tokenCount > 4000) {
+    if(tokenCount > 4096) {
       const style = document.createElement('style');
       style.textContent = `.token-counter-wrapper { position: relative; } .token-counter { position: absolute; top: 8px; right: 50px; font-size: 14px; font-weight: bold; color: #fffa; background-color: #f8595aaa; padding: 2px 6px; border-radius: 3px; }`;
       document.head.appendChild(style);
