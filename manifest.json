@@ -1,6 +1,6 @@
 {
   "manifest_version": 3,
-  "name": "OpenAI Chat Token Counter",
+  "name": "ChatGPT-Pro",
   "version": "1.0",
   "description": "A Chrome extension to display the token count for OpenAI chat messages.",
   "permissions": ["activeTab", "scripting"],
