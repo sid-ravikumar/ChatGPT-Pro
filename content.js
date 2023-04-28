@@ -213,8 +213,6 @@ function observeAppChanges() {
 
     const observer = new MutationObserver(mutations => {
         for (const mutation of mutations) {
-
-            console.log()
             if (mutation.type === 'childList' || mutation.type === 'subtree') {
                 if(mutation.target.type == "textarea"){
                   updateTokenCount([])
