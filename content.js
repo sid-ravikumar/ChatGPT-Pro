@@ -164,13 +164,9 @@ function updateTokenCount(wrapper) {
     tokenCounter.textContent = `${tokenCount} tokens`;
 
     if(tokenCount > 4096) {
-      const style = document.createElement('style');
-      style.textContent = `.token-counter-wrapper { position: relative; } .token-counter { position: absolute; top: 8px; right: 50px; font-size: 14px; font-weight: bold; color: #fffa; background-color: #f8595aaa; padding: 2px 6px; border-radius: 3px; }`;
-      document.head.appendChild(style);
+      tokenCounter.style.backgroundColor = "#f8595aaa";
     } else {
-      const style = document.createElement('style');
-      style.textContent = `.token-counter-wrapper { position: relative; } .token-counter { position: absolute; top: 8px; right: 50px; font-size: 14px; font-weight: bold; color: #fffa; background-color: #58595aaa; padding: 2px 6px; border-radius: 3px; }`;
-      document.head.appendChild(style);
+      tokenCounter.style.backgroundColor = "#58595aaa";
     }
 }
 
@@ -214,8 +210,8 @@ function observeAppChanges() {
     const observer = new MutationObserver(mutations => {
         for (const mutation of mutations) {
             if (mutation.type === 'childList' || mutation.type === 'subtree') {
-                if(mutation.target.type == "textarea"){
-                  updateTokenCount([])
+                if(mutation.target.type === "textarea"){
+                  updateTokenCount([]);
                 }
                 initTokenCounter();
                 break;
