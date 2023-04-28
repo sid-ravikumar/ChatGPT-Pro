@@ -200,7 +200,7 @@ function initTokenCounter() {
 
 // Observe changes in the application
 function observeAppChanges() {
-    const appRoot = document.querySelector('#__next');
+    const appRoot = document.querySelector('textarea');
 
     if (!appRoot) {
         setTimeout(observeAppChanges, 500);
