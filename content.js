@@ -200,7 +200,7 @@ function initTokenCounter() {
 
 // Observe changes in the application
 function observeAppChanges() {
-    const appRoot = document.querySelector('textarea');
+    const appRoot = document.querySelector("#__next > div.overflow-hidden.w-full.h-full.relative.flex > div.flex.h-full.max-w-full.flex-1.flex-col > main");
 
     if (!appRoot) {
         setTimeout(observeAppChanges, 500);

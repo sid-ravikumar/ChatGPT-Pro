@@ -3,7 +3,7 @@
   "name": "ChatGPT-Pro",
   "version": "1.0",
   "description": "A Chrome extension to display the token count for OpenAI chat messages.",
-  "permissions": ["activeTab", "scripting"],
+  "permissions": [],
   "action": {
     "default_popup": "popup.html",
     "default_icon": {
