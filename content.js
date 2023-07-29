@@ -170,9 +170,9 @@ function updateTokenCount(wrapper) {
     }
 }
 
-// Initialize token counter
+/// Initialize token counter
 function initTokenCounter() {
-    const textarea = document.querySelector('textarea');
+    const textarea = document.querySelector('#prompt-textarea');
 
     if (!textarea) {
         setTimeout(initTokenCounter, 500);
@@ -196,25 +196,19 @@ function initTokenCounter() {
     wrapper.appendChild(tokenCounter);
 
     updateTokenCount(wrapper);
+
+    // Listen for input changes on the textarea element
+    textarea.addEventListener('input', () => updateTokenCount(wrapper));
 }
 
 // Observe changes in the application
 function observeAppChanges() {
-    const appRoot = document.querySelector('textarea');
-
-    if (!appRoot) {
-        setTimeout(observeAppChanges, 500);
-        return;
-    }
+    const appRoot = document.body; // Observe the body to catch all changes
 
     const observer = new MutationObserver(mutations => {
         for (const mutation of mutations) {
             if (mutation.type === 'childList' || mutation.type === 'subtree') {
-                if(mutation.target.type === "textarea"){
-                  updateTokenCount([]);
-                }
                 initTokenCounter();
-                break;
             }
         }
     });
